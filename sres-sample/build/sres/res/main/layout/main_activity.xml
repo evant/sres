@@ -1,0 +1,5 @@
+<layout.MainActivity xmlns:android="http://schemas.android.com/apk/res/android" xmlns:bind="http://schemas.android.com/apk/lib/me.tatarka.sres" android:id="@+id/content" android:layout_height="match_parent" android:layout_width="match_parent" android:orientation="vertical">
+<Button android:id="@+id/my_button" android:layout_height="wrap_content" android:layout_width="match_parent" android:text="@string/button"/>
+<TextView android:id="@+id/bind_text" android:layout_height="wrap_content" android:layout_width="match_parent" android:padding="10dp"/>
+<me.tatarka.sres.ListView android:id="@+id/bind_list_view" android:layout_height="match_parent" android:layout_width="match_parent" bind:layout="@layout/list_item"/>
+</layout.MainActivity>

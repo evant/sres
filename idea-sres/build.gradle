@@ -1,0 +1,28 @@
+buildscript {
+    repositories {
+        maven { url 'http://repo.springsource.org/plugins-release' }
+    }
+    dependencies {
+        classpath 'org.springframework.build.gradle:propdeps-plugin:0.0.1'
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'propdeps'
+apply plugin: 'propdeps-idea'
+
+dependencies {
+    provided files('/usr/share/intellijidea-ce/lib/**/*.jar')
+}
+
+sourceSets {
+    main {
+        java.srcDirs = [file('src'), file('gen')]
+    }
+}
+
+idea {
+    module {
+        sourceDirs += file('gen')
+    }
+}

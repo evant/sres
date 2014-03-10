@@ -1,0 +1,4 @@
+me.tatarka.sres.sample.MyView<TextView(match, wrap) {
+    text = "Other Layout"
+    padding = 10dp
+}

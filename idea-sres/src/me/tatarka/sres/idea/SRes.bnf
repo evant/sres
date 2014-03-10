@@ -1,0 +1,34 @@
+{
+    parserClass="me.tatarka.sres.idea.parser.SResParser"
+    extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
+
+    psiClassPrefix="SRes"
+    psiPackage="me.tatarka.sres.idea.psi"
+    psiImplPackage="me.tatarka.sres.idea.psi.impl"
+
+    elementTypeHolderClass="me.tatarka.sres.idea.psi.SResTypes"
+    elementTypeClass="me.tatarka.sres.idea.psi.SResElementType"
+    tokenTypeClass="me.tatarka.sres.idea.psi.SResTokenType"
+
+    tokens=[
+        comment='regexp://.*'
+        number='regexp:\d+(\.\d*)?(px|dp|dip|pt|sp|in|mm)?'
+        id='regexp:\p{Alpha}[\w\._$]*'
+        string="regexp:('([^'\\]|\\.)*'|\"([^\"\\]|\\.)*\")"
+        ref='regexp:@\+?(\p{Alpha}\w*:)?(\p{Alpha}\w*)/(\p{Alpha}\w*)'
+    ]
+}
+
+root ::= (id ':')? id arguments? block?
+
+arguments ::= '(' atom? (',' atom)* ')'
+
+block ::= '{' child* '}'
+
+child ::= ref | attribute | function
+
+attribute ::= id '=' atom
+
+function ::= id arguments? block?
+
+atom ::= id | ref | string | number

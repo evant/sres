@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merger>
+
+    <dataSet config="MeTatarkaSresSresAndroid10SNAPSHOT.aar" >
+        <source path="/home/evan/android/sresProject/sres-sample/build/exploded-bundles/MeTatarkaSresSresAndroid10SNAPSHOT.aar/res" />
+    </dataSet>
+    <dataSet config="main" >
+        <source path="/home/evan/android/sresProject/sres-sample/src/main/res" >
+            <file
+                path="/home/evan/android/sresProject/sres-sample/src/main/res/values/strings.xml"
+                qualifiers="" >
+                <string name="app_name" >AndroidRes Sample
+                </string>
+                <string name="button" >Add Item!
+                </string>
+            </file>
+        </source>
+        <source path="/home/evan/android/sresProject/sres-sample/build/sres/res/main" >
+            <file
+                name="main_activity"
+                path="/home/evan/android/sresProject/sres-sample/build/sres/res/main/layout/main_activity.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="other"
+                path="/home/evan/android/sresProject/sres-sample/build/sres/res/main/layout/other.xml"
+                qualifiers=""
+                type="layout" />
+            <file
+                name="list_item"
+                path="/home/evan/android/sresProject/sres-sample/build/sres/res/main/layout/list_item.xml"
+                qualifiers=""
+                type="layout" />
+        </source>
+        <source path="/home/evan/android/sresProject/sres-sample/build/res/rs/debug" />
+        <source path="/home/evan/android/sresProject/sres-sample/build/res/generated/debug" />
+    </dataSet>
+    <dataSet config="debug" >
+        <source path="/home/evan/android/sresProject/sres-sample/src/debug/res" />
+        <source path="/home/evan/android/sresProject/sres-sample/build/sres/res/debug" />
+    </dataSet>
+
+</merger>

@@ -1,0 +1,5 @@
+TextView(match, wrap) {
+    bind:class = me.tatarka.sres.sample.MyListItem
+    text = bind(text)
+    padding = 10dp
+}

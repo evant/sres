@@ -1,0 +1,57 @@
+apply plugin: 'java'
+apply plugin: 'maven'
+
+group = 'me.tatarka.sres'
+version = '1.0-SNAPSHOT'
+
+configurations {
+    antlr4
+}
+
+dependencies {
+    antlr4 'org.antlr:antlr4:4.2'
+
+    compile 'org.antlr:antlr4-runtime:4.2'
+    compile 'com.jamesmurty.utils:java-xmlbuilder:0.6'
+    compile 'net.sf.jopt-simple:jopt-simple:4.6'
+    compile "com.sun.codemodel:codemodel:2.6"
+    compile 'commons-io:commons-io:2.4'
+    compile 'com.google.guava:guava:15.0'
+
+    compile project(':sres')
+
+    testCompile 'junit:junit:4.11'
+    testCompile 'org.easytesting:fest-assert:1.4'
+    testCompile 'xmlunit:xmlunit:1.5'
+    testCompile 'com.google.testing.compile:compile-testing:0.5-SNAPSHOT'
+    testCompile 'com.google.android:android:4.1.1.4'
+    testCompile files("${System.getenv("JAVA_HOME")}/lib/tools.jar")
+}
+
+def antlrTarget = file("src/main/antlr4/SRes.g4")
+def antlrGen = file("src/main/antlr4")
+
+task generateWithANTLR(type: JavaExec) {
+    classpath = configurations.antlr4
+    args += ['-o', "$antlrGen/me/tatarka/sres", antlrTarget]
+    args += ['-visitor', '-no-listener']
+    main = 'org.antlr.v4.Tool'
+}
+
+compileJava {
+    dependsOn generateWithANTLR
+
+    sourceCompatibility = JavaVersion.VERSION_1_7
+    targetCompatibility = JavaVersion.VERSION_1_7
+}
+
+sourceSets {
+    main.java.srcDirs += antlrGen
+}
+
+idea {
+    module {
+        sourceDirs += file('src/main/antlr4')
+        sourceDirs += antlrGen
+    }
+}

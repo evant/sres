@@ -1,0 +1,1 @@
+include 'sres', 'sres-android', 'gradle-sres', 'sres-sample', 'idea-sres', 'sres-compile'

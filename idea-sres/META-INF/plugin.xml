@@ -1,0 +1,44 @@
+<idea-plugin version="2">
+  <id>me.tatarka.sres.idea</id>
+  <name>SRres</name>
+  <version>1.0</version>
+  <vendor email="evan@tatarka.me" url="http://www.yourcompany.com">Evan Tatarka</vendor>
+
+  <description><![CDATA[
+      An Android Resource preprocessor that has a nicer syntax, codgen, and advanced layout features.
+    ]]></description>
+
+  <change-notes><![CDATA[
+      Initial Release
+    ]]>
+  </change-notes>
+
+  <!-- please see http://confluence.jetbrains.com/display/IDEADEV/Build+Number+Ranges for description -->
+  <idea-version since-build="131"/>
+
+  <!-- please see http://confluence.jetbrains.com/display/IDEADEV/Plugin+Compatibility+with+IntelliJ+Platform+Products
+       on how to target different products -->
+  <!-- uncomment to enable plugin in all products
+  <depends>com.intellij.modules.lang</depends>
+  -->
+
+  <extensions defaultExtensionNs="com.intellij">
+      <fileTypeFactory implementation="me.tatarka.sres.idea.SResFileTypeFactory"/>
+      <lang.parserDefinition language="SRes"
+          implementationClass="me.tatarka.sres.idea.SResParserDefinition"/>
+  </extensions>
+
+  <application-components>
+    <!-- Add your application components here -->
+
+  </application-components>
+
+  <project-components>
+    <!-- Add your project components here -->
+  </project-components>
+
+  <actions>
+    <!-- Add your actions here -->
+  </actions>
+
+</idea-plugin>

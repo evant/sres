@@ -1,0 +1,22 @@
+LinearLayout(match) {
+    @+id/content
+    orientation = vertical
+    bind:class = me.tatarka.sres.sample.MyModel
+
+    Button(match, wrap) {
+        @+id/my_button
+        text = @string/button
+    }
+
+    TextView(match, wrap) {
+        @+id/bind_text
+        text = bind(getText())
+        padding = 10dp
+    }
+
+    me.tatarka.sres.ListView(match, match) {
+        @+id/bind_list_view
+        bind:layout = @layout/list_item
+        bind = bind(items())
+    }
+}
