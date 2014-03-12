@@ -11,9 +11,9 @@ import java.util.List;
 public class MyModel {
     private boolean enabled;
     private List<MyListItem> items = new ObservableArrayList<>(Arrays.asList(
-            new MyListItem("One"),
-            new MyListItem("Two"),
-            new MyListItem("Three")
+            new MyListItem(this, "One"),
+            new MyListItem(this, "Two"),
+            new MyListItem(this, "Three")
     ));
 
     public void toggle() {
@@ -26,5 +26,9 @@ public class MyModel {
 
     public List<MyListItem> items() {
         return items;
+    }
+
+    public void addItem(String text) {
+        items().add(new MyListItem(this, text));
     }
 }

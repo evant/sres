@@ -9,21 +9,17 @@ import android.view.ViewGroup;
 import java.util.List;
 
 /**
- * Created by evan on 3/9/14.
+ * Created by evan on 3/11/14.
  */
-public class ListView<T> extends android.widget.ListView implements Bindable<List<T>> {
+public class ViewPager<T> extends android.support.v4.view.ViewPager implements Bindable<List<T>> {
     private LayoutSelectorHelper<T> helper = new LayoutSelectorHelper<>();
 
-    public ListView(Context context) {
+    public ViewPager(Context context) {
         this(context, null);
     }
 
-    public ListView(Context context, AttributeSet attrs) {
-        this(context, attrs, 0);
-    }
-
-    public ListView(Context context, AttributeSet attrs, int defStyle) {
-        super(context, attrs, defStyle);
+    public ViewPager(Context context, AttributeSet attrs) {
+        super(context, attrs);
 
         if (attrs != null) {
             String layoutName = attrs.getAttributeValue(Bindable.NAMESPACE, "layout");
@@ -42,13 +38,18 @@ public class ListView<T> extends android.widget.ListView implements Bindable<Lis
         }
     }
 
-    public void setLayout(final int layout) {
-        setLayoutSelector(LayoutSelectorHelper.<T>fromLayout(layout));
+    public void setLayout(final int layoutId) {
+        setLayoutSelector(LayoutSelectorHelper.<T>fromLayout(layoutId));
+    }
+
+    @Override
+    public ObservablePagerAdapter<T> getAdapter() {
+        return (ObservablePagerAdapter<T>) super.getAdapter();
     }
 
     @Override
     public void bind(List<T> model) {
-        setAdapter(new ObservableAdapter<T>(model) {
+        setAdapter(new ObservablePagerAdapter<T>(model) {
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
                 View view = convertView;
@@ -70,10 +71,5 @@ public class ListView<T> extends android.widget.ListView implements Bindable<Lis
                 return helper.getItemTypeCount();
             }
         });
-    }
-
-    @Override
-    public ObservableAdapter<T> getAdapter() {
-        return (ObservableAdapter<T>) super.getAdapter();
     }
 }

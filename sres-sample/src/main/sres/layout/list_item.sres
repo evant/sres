@@ -1,5 +1,15 @@
-TextView(match, wrap) {
+me.tatarka.sres.sample.MyListItemView<LinearLayout(match, wrap) {
     bind:class = me.tatarka.sres.sample.MyListItem
-    text = bind(text)
-    padding = 10dp
+    orientation = vertical
+
+    TextView(match, wrap) {
+        @+id/text
+        text = bind(text)
+        padding = 10dp
+    }
+
+    Button(match, wrap) {
+        @+id/button
+        text = "Remove Item!"
+    }
 }

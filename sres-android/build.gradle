@@ -15,6 +15,7 @@ version = '1.0-SNAPSHOT'
 
 dependencies {
     compile project(':sres')
+    compile "com.android.support:support-v4:19.0.+"
 }
 
 android {

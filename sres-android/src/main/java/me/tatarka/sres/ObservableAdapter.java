@@ -1,10 +1,7 @@
 package me.tatarka.sres;
 
-import android.os.Handler;
-import android.os.Looper;
 import android.widget.BaseAdapter;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -12,84 +9,34 @@ import java.util.List;
  * Created by evan on 3/9/14.
  */
 public abstract class ObservableAdapter<T> extends BaseAdapter {
-    private Handler handler;
-    private ObservableList<T> list;
-    private List<T> viewList = new ArrayList<>();
-    private ObservableList.Listener<T> listener = new ObservableList.Listener<T>() {
-        @Override
-        public void onChange(final ObservableList.ChangeType changeType, final Collection<ObservableList.Change<T>> changes) {
-            if (Looper.myLooper() != Looper.getMainLooper()) {
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        updateBackingList(changeType, changes);
-                    }
-                });
-            } else {
-                updateBackingList(changeType, changes);
-            }
-        }
-    };
+    private ObservableListViewHelper<T> helper;
 
     public ObservableAdapter(List<T> list) {
-        handler = new Handler(Looper.getMainLooper());
-        replace(list);
+        helper = new ObservableListViewHelper<>(list);
+        helper.setListener(new ObservableList.Listener<T>() {
+            @Override
+            public void onChange(ObservableList.ChangeType changeType, Collection<ObservableList.Change<T>> changes) {
+                notifyDataSetChanged();
+            }
+        });
     }
 
     public void replace(List<T> list) {
-        if (this.list != null) {
-            this.list.removeListener(listener);
-        }
-
-        if (list instanceof ObservableList) {
-            this.list = (ObservableList<T>) list;
-        } else {
-            this.list = new ObservableArrayList<>(list);
-        }
-
-        setBackingList();
-
-        this.list.addListener(listener);
-    }
-
-    private void setBackingList() {
-        getViewList().clear();
-        getViewList().addAll(list);
-    }
-
-    protected void updateBackingList(ObservableList.ChangeType changeType, final Collection<ObservableList.Change<T>> changes) {
-        if (changeType == ObservableList.ChangeType.UPDATE) {
-            for (ObservableList.Change<T> change : changes) {
-                getViewList().set(change.index, change.value);
-            }
-        } else if (changeType == ObservableList.ChangeType.ADD) {
-            for (ObservableList.Change<T> change : changes) {
-                getViewList().add(change.index, change.value);
-            }
-        } else if (changeType == ObservableList.ChangeType.REMOVE) {
-            for (ObservableList.Change<T> change : changes) {
-                getViewList().remove(change.index);
-            }
-        }
-        notifyDataSetChanged();
+        helper.replace(list);
     }
 
     public ObservableList<T> getList() {
-        return list;
-    }
-
-    protected List<T> getViewList() {
-        return viewList;
+        return helper.getList();
     }
 
     @Override
     public int getCount() {
-        return viewList.size();
+        return helper.getList().size();
     }
 
     @Override
     public T getItem(int position) {
-        return viewList.get(position);
+        return helper.getList().get(position);
     }
 
     @Override

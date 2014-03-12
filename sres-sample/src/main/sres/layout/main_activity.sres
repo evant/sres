@@ -14,8 +14,8 @@ LinearLayout(match) {
         padding = 10dp
     }
 
-    me.tatarka.sres.ListView(match, match) {
-        @+id/bind_list_view
+    me.tatarka.sres.ViewPager(match, match) {
+        @+id/bind_view_pager
         bind:layout = @layout/list_item
         bind = bind(items())
     }
