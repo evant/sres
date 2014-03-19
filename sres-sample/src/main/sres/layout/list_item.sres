@@ -4,7 +4,7 @@ me.tatarka.sres.sample.MyListItemView<LinearLayout(match, wrap) {
 
     TextView(match, wrap) {
         @+id/text
-        text = bind(text)
+        bind:text = text
         padding = 10dp
     }
 

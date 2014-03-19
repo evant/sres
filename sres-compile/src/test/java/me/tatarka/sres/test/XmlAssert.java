@@ -33,9 +33,7 @@ public class XmlAssert extends GenericAssert<XmlAssert, Xml> {
         try {
             assertXMLEqual(expected.xml, actual.xml);
 
-        } catch (SAXException e) {
-            fail(e.getMessage(), e);
-        } catch (IOException e) {
+        } catch (SAXException | IOException e) {
             fail(e.getMessage(), e);
         }
         return this;

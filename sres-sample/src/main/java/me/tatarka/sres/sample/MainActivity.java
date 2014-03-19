@@ -24,12 +24,6 @@ public class MainActivity extends Activity {
                 view.bindText.setText(model.getText());
             }
         });
-//        view.bindListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//            @Override
-//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                model.items().remove(position);
-//            }
-//        });
         view.bind(model);
     }
 }

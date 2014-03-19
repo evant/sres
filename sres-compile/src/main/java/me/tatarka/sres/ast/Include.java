@@ -12,10 +12,10 @@ public class Include implements Child {
 
     public final String layout;
     public final String id;
-    public final Set<Attribute> attributes;
+    public final java.util.Set<Attribute> attributes;
     public final List<Child> yields;
 
-    public Include(@NotNull Set<Attribute> attributes, @NotNull List<Child> yields) {
+    public Include(@NotNull java.util.Set<Attribute> attributes, @NotNull List<Child> yields) {
         this.attributes = Collections.unmodifiableSet(attributes);
         this.yields = Collections.unmodifiableList(yields);
         this.layout = findLayout();
@@ -24,14 +24,14 @@ public class Include implements Child {
 
     private String findLayout() {
         for (Attribute attribute : attributes) {
-            if (attribute.name.equals(Attribute.LAYOUT)) return attribute.binding.value;
+            if (attribute.name.equals(Attribute.LAYOUT)) return attribute.value;
         }
         throw new IllegalArgumentException("Include must have a layout");
     }
 
     private String findId() {
         for (Attribute attribute : attributes) {
-            if (attribute.name.equals(Attribute.ID)) return attribute.binding.value;
+            if (attribute.name.equals(Attribute.ID)) return attribute.value;
         }
         return null;
     }
@@ -41,11 +41,11 @@ public class Include implements Child {
     }
 
     public static class Builder implements Child.Builder {
-        private final Set<Attribute> attributes = new LinkedHashSet<>();
+        private final java.util.Set<Attribute> attributes = new LinkedHashSet<>();
         private final List<Child> yields = new ArrayList<>();
 
         public Builder(String layout) {
-            attribute(new Attribute(Attribute.LAYOUT, layout, Attribute.RAW));
+            attribute(new Attribute(Attribute.LAYOUT, layout, Attribute.Namespace.NONE));
         }
 
         public Builder id(String id) {

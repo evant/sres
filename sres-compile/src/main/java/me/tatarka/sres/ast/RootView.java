@@ -14,17 +14,30 @@ public class RootView {
     public final String bindClass;
 
     public RootView(@NotNull String name, @Nullable String subclass,
-                    @NotNull Set<Attribute> attributes, @NotNull List<Child> children) {
+                    @NotNull java.util.Set<Attribute> attributes, @NotNull List<Child> children) {
         view = new View(name, attributes,  children);
         this.subclass = subclass;
         this.bindClass = findBindClass();
+
+        if (this.bindClass == null) {
+            verifyNoBindings(view);
+        }
     }
 
     private String findBindClass() {
         for (Attribute attribute : view.attributes) {
-            if (attribute.name.equals(Attribute.BIND_CLASS)) return attribute.binding.value;
+            if (attribute.name.equals(Attribute.BIND_CLASS)) return attribute.value;
         }
         return null;
+    }
+
+    private void verifyNoBindings(View view) {
+        if (!view.bindings.isEmpty()) {
+            throw new IllegalArgumentException("bind:class must be defined if there are any data bindings");
+        }
+        for (Child child : view.children) {
+            if (child instanceof View) verifyNoBindings((View) child);
+        }
     }
 
     public static Builder of(String name) {
@@ -33,7 +46,7 @@ public class RootView {
 
     public static class Builder {
         private String name;
-        private Set<Attribute> attributes = new LinkedHashSet<>();
+        private java.util.Set<Attribute> attributes = new LinkedHashSet<>();
         private List<Child> children = new ArrayList<>();
         private String subclass;
 
@@ -69,8 +82,8 @@ public class RootView {
             return attribute(new Attribute(name, value));
         }
 
-        public Builder attribute(String name, Binding binding) {
-            return attribute(new Attribute(name, binding));
+        public Builder bind(String name, String value) {
+            return attribute(new Attribute(name, value, Attribute.Namespace.BIND));
         }
 
         public Builder child(Child child) {

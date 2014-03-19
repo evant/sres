@@ -148,13 +148,46 @@ public class TestLayoutGeneratorXml {
     }
 
     @Test
-    public void testBinding() {
-        Xml expected = new Xml(
-                "<test.Test xmlns:android=\"http://schemas.android.com/apk/res/android\"/>"
-        );
+    public void testBindField() {
+        Xml expected = new Xml(Joiner.on("\n").join(
+                "<test.Test xmlns:android=\"http://schemas.android.com/apk/res/android\"",
+                "xmlns:bind=\"http://schemas.android.com/apk/lib/me.tatarka.sres\"",
+                "bind:class=\"MyClass\"",
+                "bind:text=\"text\"/>"
+        ));
+        Xml actual = toXml("test", RootView.of("TextView")
+                .bindClass("MyClass")
+                .bind("text", "text")
+                .build());
+
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void testBindMethod() {
+        Xml expected = new Xml(Joiner.on("\n").join(
+                "<test.Test xmlns:android=\"http://schemas.android.com/apk/res/android\"",
+                "xmlns:bind=\"http://schemas.android.com/apk/lib/me.tatarka.sres\"",
+                "bind:class=\"MyClass\"",
+                "bind:text=\"text()\"/>"
+        ));
+        Xml actual = toXml("test", RootView.of("TextView")
+                .bindClass("MyClass")
+                .bind("text", "text()")
+                .build());
+
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void testBindClass() {
+        Xml expected = new Xml(Joiner.on("\n").join(
+                "<test.Test xmlns:android=\"http://schemas.android.com/apk/res/android\"",
+                "xmlns:bind=\"http://schemas.android.com/apk/lib/me.tatarka.sres\"",
+                "bind:class=\"Model\"/>"
+        ));
         Xml actual = toXml("test", RootView.of("TextView")
                 .bindClass("Model")
-                .attribute("text", Binding.field("text"))
                 .build());
 
         assertThat(actual).isEqualTo(expected);

@@ -1,6 +1,7 @@
 package me.tatarka.sres;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,11 +23,10 @@ public class ViewPager<T> extends android.support.v4.view.ViewPager implements B
         super(context, attrs);
 
         if (attrs != null) {
-            String layoutName = attrs.getAttributeValue(Bindable.NAMESPACE, "layout");
-            if (layoutName != null) {
-                int layout = getResources().getIdentifier(layoutName, "layout", getContext().getPackageName());
-                setLayout(layout);
-            }
+            TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.SRes);
+            int layout = a.getResourceId(R.styleable.SRes_layout, 0);
+            if (layout > 0) setLayout(layout);
+            a.recycle();
         }
     }
 

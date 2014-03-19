@@ -1,9 +1,7 @@
 package me.tatarka.sres.test;
 
 import com.google.common.base.Joiner;
-import me.tatarka.sres.ast.Binding;
-import me.tatarka.sres.ast.RootView;
-import me.tatarka.sres.ast.View;
+import me.tatarka.sres.ast.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -128,8 +126,8 @@ public class TestLayoutGeneratorCode {
         ));
         Code actual = toCode("test_view_base", RootView.of("TextView")
                 .bindClass("me.tatarka.sres.test.Model")
-                .attribute("text", Binding.field("text"))
-                .attribute("background_color", Binding.method("getColor"))
+                .bind("text", "text")
+                .bind("background_color", "getColor()")
                 .build());
 
         assertThat(actual).isEqualTo(expected);
@@ -172,8 +170,8 @@ public class TestLayoutGeneratorCode {
         ));
         Code actual = toCode("test_view_base", RootView.of("TextView")
                 .bindClass("me.tatarka.sres.test.Model")
-                .attribute("text", Binding.field("text"))
-                .attribute("background_color", Binding.method("getColor"))
+                .bind("text", "text")
+                .bind("background_color", "getColor()")
                 .build());
 
         assertThat(actual).isEqualTo(expected);

@@ -5,7 +5,10 @@ import com.sun.codemodel.*;
 import me.tatarka.sres.Bindable;
 import me.tatarka.sres.LayoutGenerator;
 import me.tatarka.sres.SResOutput;
-import me.tatarka.sres.ast.*;
+import me.tatarka.sres.ast.Binding;
+import me.tatarka.sres.ast.Child;
+import me.tatarka.sres.ast.RootView;
+import me.tatarka.sres.ast.View;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -121,27 +124,25 @@ public class SResCodeLayoutGenerator implements LayoutGenerator {
         JVar model = b.param(bindingClass, "model");
         JBlock body = b.body();
 
-        for (Attribute attribute : rootView.view.attributes) {
-            emitBinding(body, null, model, attribute);
+        for (Binding binding : rootView.view.bindings) {
+            emitBinding(body, null, model, binding);
         }
 
         for (int i = 0; i < views.size(); i++) {
             JFieldVar field = fields.get(i); View view = views.get(i);
 
-            for (Attribute attribute : view.attributes) {
-                emitBinding(body, field, model, attribute);
+            for (Binding binding : view.bindings) {
+                emitBinding(body, field, model, binding);
             }
         }
     }
 
-    private void emitBinding(JBlock body, JExpression target, JVar model, Attribute attribute) {
-        if (attribute.binding.to == Binding.To.LITERAL) return;
+    private void emitBinding(JBlock body, JExpression target, JVar model, Binding binding) {
+        JExpression arg = binding.type == Binding.Type.FIELD
+                ? model.ref(binding.value)
+                : model.invoke(binding.value);
 
-        JExpression arg = attribute.binding.to == Binding.To.FIELD
-                ? model.ref(attribute.binding.value)
-                : model.invoke(attribute.binding.value);
-
-        String setter = toSetter(attribute.name);
+        String setter = toSetter(binding.name);
 
         (target == null ? body.invoke(setter) : body.invoke(target, setter)).arg(arg);
     }

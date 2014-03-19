@@ -17,6 +17,7 @@ import java.util.Properties;
  */
 public class SResXmlLayoutGenerator implements LayoutGenerator {
     public static final String NS_ANDROID = "http://schemas.android.com/apk/res/android";
+    public static final String NS_APP = "http://schemas.android.com/apk/res-auto";
 
     @Override
     public void generate(RootView rootView, SResOutput output) {
@@ -27,7 +28,9 @@ public class SResXmlLayoutGenerator implements LayoutGenerator {
                             + CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.UPPER_CAMEL, output.sourceInfo.getName());
 
             XMLBuilder b = XMLBuilder.create(rootClassName);
+
             b.namespace("android", NS_ANDROID);
+            b.namespace("app", NS_APP);
 
             if (rootView.bindClass != null) {
                 b.namespace("bind", Bindable.NAMESPACE);
@@ -80,8 +83,6 @@ public class SResXmlLayoutGenerator implements LayoutGenerator {
     }
 
     private static void buildAttribute(XMLBuilder e, Attribute attribute) {
-        if (attribute.binding.to == Binding.To.LITERAL && !attribute.name.equals(Attribute.BIND_CLASS))  {
-            e.a(attribute.name, attribute.binding.value);
-        }
+        e.a(attribute.name, attribute.value);
     }
 }

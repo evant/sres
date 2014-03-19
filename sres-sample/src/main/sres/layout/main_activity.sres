@@ -10,13 +10,13 @@ LinearLayout(match) {
 
     TextView(match, wrap) {
         @+id/bind_text
-        text = bind(getText())
+        bind:text = getText()
         padding = 10dp
     }
 
     me.tatarka.sres.ViewPager(match, match) {
         @+id/bind_view_pager
-        bind:layout = @layout/list_item
-        bind = bind(items())
+        app:layout = @layout/list_item
+        bind:bind = items()
     }
 }

@@ -9,7 +9,7 @@ import static me.tatarka.sres.test.TestHelper.parse;
 import static org.fest.assertions.Assertions.assertThat;
 
 @RunWith(JUnit4.class)
-public class TestParser {
+public class TestParseSres {
     @Test
     public void testSingleView() {
         RootView expected = RootView.of("TextView").build();
@@ -111,7 +111,6 @@ public class TestParser {
         RootView expected = RootView.of("LinearLayout")
                 .child(Include.of("@layout/test"))
                 .build();
-
         RootView actual = parse("LinearLayout { include(@layout/test) }");
 
         assertThat(actual).isEqualTo(expected);
@@ -120,10 +119,10 @@ public class TestParser {
     @Test
     public void testBindField() {
         RootView expected = RootView.of("TextView")
-                .attribute("text", Binding.field("text"))
+                .bindClass("MyClass")
+                .bind("text", "text")
                 .build();
-
-        RootView actual = parse("TextView { text = bind(text) }");
+        RootView actual = parse("TextView { bind:class = MyClass\nbind:text = text }");
 
         assertThat(actual).isEqualTo(expected);
     }
@@ -131,10 +130,11 @@ public class TestParser {
     @Test
     public void testBindMethod() {
         RootView expected = RootView.of("TextView")
-                .attribute("text", Binding.method("text"))
+                .bindClass("MyClass")
+                .bind("text", "text()")
                 .build();
 
-        RootView actual = parse("TextView { text = bind(text()) }");
+        RootView actual = parse("TextView { bind:class = MyClass\nbind:text = text() }");
 
         assertThat(actual).isEqualTo(expected);
     }
@@ -144,20 +144,7 @@ public class TestParser {
         RootView expected = RootView.of("TextView")
                 .bindClass("Model")
                 .build();
-
         RootView actual = parse("TextView { bind:class = Model }");
-
-        assertThat(actual).isEqualTo(expected);
-    }
-
-    @Test
-    public void testBindObservable() {
-        RootView expected = RootView.of("TextView")
-                .bindClass("String")
-                .attribute("text", Binding.field(Binding.Type.OBSERVABLE, "text"))
-                .build();
-
-        RootView actual = parse("TextView { bind:class = String\ntext = bind(observe, text) }");
 
         assertThat(actual).isEqualTo(expected);
     }

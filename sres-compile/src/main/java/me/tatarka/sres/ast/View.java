@@ -5,28 +5,41 @@ import org.antlr.v4.runtime.misc.NotNull;
 
 import java.util.*;
 
+
 /**
  * Created by evan on 2/27/14.
  */
 public class View implements Child {
     public final String name;
-    public final Set<Attribute> attributes;
+    public final java.util.Set<Attribute> attributes;
+    public final java.util.Set<Binding> bindings;
     public final List<Child> children;
     public final String id;
 
-    public View(@NotNull String name, @NotNull Set<Attribute> attributes,
+    public View(@NotNull String name, @NotNull java.util.Set<Attribute> attributes,
                 @NotNull List<Child> children) {
         this.name = name;
         this.attributes = Collections.unmodifiableSet(attributes);
         this.children = Collections.unmodifiableList(children);
         this.id = findId();
+        this.bindings = findBindings();
     }
 
     private String findId() {
         for (Attribute attribute : attributes) {
-            if (attribute.name.equals(Attribute.ID)) return attribute.binding.value;
+            if (attribute.name.equals(Attribute.ID)) return attribute.value;
         }
         return null;
+    }
+
+    private Set<Binding> findBindings() {
+        Set<Binding> bindings = new LinkedHashSet<>();
+        for (Attribute attribute : attributes) {
+            if (attribute.isBinding()) {
+                bindings.add(new Binding(attribute.simpleName(), attribute.value));
+            }
+        }
+        return bindings;
     }
 
     public String qualifiedName() {
@@ -49,7 +62,7 @@ public class View implements Child {
 
     public static class Builder implements Child.Builder {
         private String name;
-        private Set<Attribute> attributes = new LinkedHashSet<>();
+        private java.util.Set<Attribute> attributes = new LinkedHashSet<>();
         private List<Child> children = new ArrayList<>();
 
         public Builder(String name) {
@@ -66,21 +79,21 @@ public class View implements Child {
             return this;
         }
 
+        public Builder bindClass(String bindClass) {
+            return attribute(Attribute.BIND_CLASS, bindClass);
+        }
+
+        public Builder bind(String name, String value) {
+            return attribute(new Attribute(name, value, Attribute.Namespace.BIND));
+        }
+
         public Builder attribute(Attribute attribute) {
             attributes.add(attribute);
             return this;
         }
 
-        public Builder bindClass(String bindClass) {
-            return attribute(Attribute.BIND_CLASS, bindClass);
-        }
-
         public Builder attribute(String name, String value) {
             return attribute(new Attribute(name, value));
-        }
-
-        public Builder attribute(String name, Binding binding) {
-            return attribute(new Attribute(name, binding));
         }
 
         public Builder child(Child child) {

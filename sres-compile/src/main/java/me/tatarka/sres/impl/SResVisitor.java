@@ -71,7 +71,7 @@ class SResVisitor extends SResBaseVisitor {
 
     private void addIncludeArguments(Set<Attribute> attributes, List<String> arguments) {
         if (arguments.size() > 0) {
-            attributes.add(new Attribute(Attribute.LAYOUT, arguments.get(0), Attribute.RAW));
+            attributes.add(new Attribute(Attribute.LAYOUT, arguments.get(0), Attribute.Namespace.NONE));
         }
 
         String arg1 = arguments.size() > 1 ? arguments.get(1) : null;
@@ -105,7 +105,7 @@ class SResVisitor extends SResBaseVisitor {
     public List<String> visitArguments(@NotNull SResParser.ArgumentsContext ctx) {
         List<String> arguments = new ArrayList<>();
         for (SResParser.AtomContext atomNode : ctx.atom()) {
-            arguments.add(visitAtom(atomNode).toString());
+            arguments.add(visitAtom(atomNode));
         }
         return arguments;
     }
@@ -139,22 +139,12 @@ class SResVisitor extends SResBaseVisitor {
     @Override
     public Attribute visitAttribute(@NotNull SResParser.AttributeContext ctx) {
         String name = ctx.Identifier().getText();
-        Object value = visitAtom(ctx.atom());
-        if (value instanceof Binding) {
-            return new Attribute(name, (Binding) value);
-        } else {
-            return new Attribute(name, value.toString());
-        }
+        String value = visitAtom(ctx.atom());
+        return new Attribute(name, value);
     }
 
     @Override
-    public Object visitAtom(@NotNull SResParser.AtomContext ctx) {
-        // Check for binding function
-        SResParser.FunctionContext bindingFunction = ctx.function();
-        if (bindingFunction != null) {
-            return visitBindingFunction(bindingFunction);
-        }
-
+    public String visitAtom(@NotNull SResParser.AtomContext ctx) {
         // Strip quotes from string
         if (ctx.String() != null) {
             String string = ctx.getText();
@@ -162,38 +152,6 @@ class SResVisitor extends SResBaseVisitor {
         }
 
         return ctx.getText();
-    }
-
-    private Binding visitBindingFunction(@NotNull SResParser.FunctionContext ctx) {
-        if (ctx.Identifier().getText().equals("bind")) {
-            List<String> arguments = visitArguments(ctx.arguments());
-            if (arguments.size() == 1) {
-                String value = arguments.get(0);
-                return newBinding(Binding.Type.PRIMITIVE, value);
-            } else if (arguments.size() == 2) {
-                String type = arguments.get(0);
-                String value = arguments.get(1);
-                return newBinding(type, value);
-            }
-        }
-
-        // Unknown function, just treat as literal
-        return Binding.literal(ctx.getText());
-    }
-
-    private Binding newBinding(String type, String value) {
-        if (type.equals("observe")) return newBinding(Binding.Type.OBSERVABLE, value);
-        if (type.equals("listen")) return newBinding(Binding.Type.LISTENER, value);
-        // Unknown binding type, ignore
-        return newBinding(Binding.Type.PRIMITIVE, value);
-    }
-
-    private Binding newBinding(Binding.Type type, String value) {
-        if (value.endsWith("()")) {
-            return Binding.method(type, value.replace("()", ""));
-        } else {
-            return Binding.field(type, value);
-        }
     }
 
     private static class Block {

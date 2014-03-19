@@ -6,62 +6,39 @@ import java.util.Objects;
  * Created by evan on 3/9/14.
  */
 public class Binding {
-    public final To to;
-    public final Type type;
+    public final String name;
     public final String value;
+    public final Type type;
 
-    public Binding(Type type, To to, String value) {
-        this.type = type;
-        this.to = to;
-        this.value = value;
+    public Binding(String name, String value) {
+        this.name = name;
+
+        if (value.endsWith("()")) {
+            this.type = Type.METHOD;
+            this.value = value.substring(0, value.length() - 2);
+        } else {
+            this.type = Type.FIELD;
+            this.value = value;
+        }
     }
 
-    public static Binding literal(String value) {
-        return new Binding(Type.PRIMITIVE, To.LITERAL, value);
-    }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
 
-    public static Binding field(String value) {
-        return new Binding(Type.PRIMITIVE, To.FIELD, value);
-    }
+        Binding binding = (Binding) o;
 
-    public static Binding method(String value) {
-        return new Binding(Type.PRIMITIVE, To.METHOD, value);
-    }
+        return name.equals(binding.name) && value.equals(binding.value) && type.equals(binding.type);
 
-    public static Binding literal(Type type, String value) {
-        return new Binding(type, To.LITERAL, value);
-    }
-
-    public static Binding field(Type type, String value) {
-        return new Binding(type, To.FIELD, value);
-    }
-
-    public static Binding method(Type type, String value) {
-        return new Binding(type, To.METHOD, value);
-    }
-
-    public static enum To {
-        LITERAL, FIELD, METHOD
-    }
-
-    public static enum Type {
-        PRIMITIVE, OBSERVABLE, LISTENER
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(to, value);
+        return Objects.hash(name, value, type);
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null || obj.getClass() != getClass()) return false;
-        Binding other = (Binding) obj;
-        return Objects.equals(to, other.to) && Objects.equals(value, other.value);
-    }
-
-    @Override
-    public String toString() {
-        return value;
+    public static enum Type {
+        FIELD, METHOD
     }
 }
