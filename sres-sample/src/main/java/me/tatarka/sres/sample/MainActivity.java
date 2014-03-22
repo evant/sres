@@ -21,7 +21,6 @@ public class MainActivity extends Activity {
             public void onClick(View v) {
                 model.addItem("Net Item");
                 model.toggle();
-                view.bindText.setText(model.getText());
             }
         });
         view.bind(model);

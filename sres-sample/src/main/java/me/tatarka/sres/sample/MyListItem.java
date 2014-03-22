@@ -5,11 +5,15 @@ package me.tatarka.sres.sample;
  */
 public class MyListItem {
     private MyModel model;
-    public String text;
+    private String text;
 
     public MyListItem(MyModel model, String text) {
         this.model = model;
         this.text = text;
+    }
+
+    public String getText() {
+        return text;
     }
 
     public void remove() {

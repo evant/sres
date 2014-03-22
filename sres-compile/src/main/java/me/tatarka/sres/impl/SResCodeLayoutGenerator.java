@@ -2,7 +2,6 @@ package me.tatarka.sres.impl;
 
 import com.google.common.base.CaseFormat;
 import com.sun.codemodel.*;
-import me.tatarka.sres.Bindable;
 import me.tatarka.sres.LayoutGenerator;
 import me.tatarka.sres.SResOutput;
 import me.tatarka.sres.ast.Binding;
@@ -15,6 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.sun.codemodel.JExpr.*;
+import static com.sun.codemodel.JMod.FINAL;
+import static com.sun.codemodel.JMod.PROTECTED;
 import static com.sun.codemodel.JMod.PUBLIC;
 
 /**
@@ -30,11 +31,12 @@ public class SResCodeLayoutGenerator implements LayoutGenerator {
             String className = toClassName(output.sourceInfo.getName());
             JDefinedClass clazz = pkg._class(PUBLIC, className)._extends(m.ref(rootView.view.qualifiedName()));
             if (rootView.bindClass != null) {
-                clazz._implements(m.ref(Bindable.class).narrow(m.ref(rootView.bindClass)));
+                clazz._implements(m.ref("me.tatarka.sres.Bindable").narrow(m.ref(rootView.bindClass)));
             }
 
             JClass contextClass = m.ref("android.content.Context");
             JClass attrsClass = m.ref("android.util.AttributeSet");
+            JClass observableTrackerClass = m.ref("me.tatarka.sres.ObservableTracker");
             JPrimitiveType intClass = m.INT;
             JPrimitiveType voidClass = m.VOID;
 
@@ -42,12 +44,21 @@ public class SResCodeLayoutGenerator implements LayoutGenerator {
 
             List<JFieldVar> viewFields = emitFields(m, clazz, viewsWithIds);
 
+            JFieldVar trackerField = null;
+            if (rootView.bindClass != null) {
+                trackerField = emitTracker(m, clazz, observableTrackerClass);
+            }
+
             emitConstructor1(clazz, contextClass);
             emitConstructor2(clazz, contextClass, attrsClass);
             emitConstructor3(clazz, contextClass, attrsClass, intClass);
 
             emitOnFinishInflate(m, output.sourceInfo.getAppPackageName(), clazz, voidClass, viewsWithIds, viewFields);
-            emitBindings(m, clazz, voidClass, rootView, viewsWithIds, viewFields);
+
+            if (rootView.bindClass != null) {
+                emitBindings(m, clazz, trackerField, voidClass, rootView, viewsWithIds, viewFields);
+                emitOnDetachedFromWindow(clazz, trackerField, voidClass);
+            }
 
             m.build(new WriterCodeWriter(output.writer));
         } catch (JClassAlreadyExistsException | IOException e) {
@@ -68,6 +79,10 @@ public class SResCodeLayoutGenerator implements LayoutGenerator {
         for (Child child : view.children) {
             if (child instanceof View) findViewsWithIds((View) child, views);
         }
+    }
+
+    private JFieldVar emitTracker(JCodeModel m, JDefinedClass clazz, JClass observableTrackerClass) {
+        return clazz.field(PROTECTED | FINAL, m.ref("me.tatarka.sres.ObservableTracker"), "tracker", _new(observableTrackerClass));
     }
 
     private List<JFieldVar> emitFields(JCodeModel m, JDefinedClass clazz, List<View> views) {
@@ -116,35 +131,52 @@ public class SResCodeLayoutGenerator implements LayoutGenerator {
         }
     }
 
-    private void emitBindings(JCodeModel m, JDefinedClass clazz, JPrimitiveType voidClass, RootView rootView, List<View> views, List<JFieldVar> fields) {
-        if (rootView.bindClass == null) return;
+    private void emitOnDetachedFromWindow(JDefinedClass clazz, JFieldVar trackerField, JPrimitiveType voidClass) {
+        JMethod o = clazz.method(PROTECTED, voidClass, "onDetachedFromWindow");
+        o.annotate(Override.class);
+        JBlock body = o.body();
+        body.invoke(_super(), "onDetachedFromWindow");
+        body.invoke(trackerField, "clear");
+    }
 
+    private void emitBindings(JCodeModel m, JDefinedClass clazz, JFieldVar trackerField, JPrimitiveType voidClass, RootView rootView, List<View> views, List<JFieldVar> fields) {
         JClass bindingClass = m.ref(rootView.bindClass);
         JMethod b = clazz.method(PUBLIC, voidClass, "bind");
-        JVar model = b.param(bindingClass, "model");
+        JVar model = b.param(FINAL, bindingClass, "model");
         JBlock body = b.body();
 
         for (Binding binding : rootView.view.bindings) {
-            emitBinding(body, null, model, binding);
+            emitBinding(m, body, trackerField, voidClass, null, model, binding);
         }
 
         for (int i = 0; i < views.size(); i++) {
             JFieldVar field = fields.get(i); View view = views.get(i);
 
             for (Binding binding : view.bindings) {
-                emitBinding(body, field, model, binding);
+                emitBinding(m, body, trackerField, voidClass, field, model, binding);
             }
         }
     }
 
-    private void emitBinding(JBlock body, JExpression target, JVar model, Binding binding) {
-        JExpression arg = binding.type == Binding.Type.FIELD
-                ? model.ref(binding.value)
-                : model.invoke(binding.value);
+    private void emitBinding(JCodeModel m, JBlock body, JFieldVar trackerField, JPrimitiveType voidClass, JExpression target, JVar model, Binding binding) {
+        if (binding.type == Binding.Type.FIELD) {
+            JExpression arg = model.ref(binding.value);
+            String setter = toSetter(binding.name);
 
-        String setter = toSetter(binding.name);
+            (target == null ? body.invoke(setter) : body.invoke(target, setter)).arg(arg);
+        } else {
+            JExpression arg = model.invoke(binding.value);
+            String setter = toSetter(binding.name);
 
-        (target == null ? body.invoke(setter) : body.invoke(target, setter)).arg(arg);
+            JDefinedClass listener = m.anonymousClass(m.ref("me.tatarka.sres.Observable.Listener"));
+            JMethod o = listener.method(PUBLIC, voidClass, "onChange");
+            o.annotate(Override.class);
+            JBlock listenerBody = o.body();
+
+            (target == null ? listenerBody.invoke(setter) : listenerBody.invoke(target, setter)).arg(arg);
+
+            body.invoke(trackerField, "listen").arg(_new(listener));
+        }
     }
 
     private String toClassName(String name) {

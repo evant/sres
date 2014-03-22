@@ -99,12 +99,16 @@ public class TestLayoutGeneratorCode {
                 "import android.util.AttributeSet;",
                 "import android.widget.TextView;",
                 "import me.tatarka.sres.Bindable;",
+                "import me.tatarka.sres.Observable.Listener;",
+                "import me.tatarka.sres.ObservableTracker;",
                 "import me.tatarka.sres.test.Model;",
                 "",
                 "public class TestViewBase",
                 "    extends TextView",
                 "    implements Bindable<Model>", "{",
-                "", "",
+                "",
+                "    protected final ObservableTracker tracker = new ObservableTracker();",
+                "",
                 "    public TestViewBase(Context context) {",
                 "        this(context, null);",
                 "    }",
@@ -117,53 +121,23 @@ public class TestLayoutGeneratorCode {
                 "        super(context, attrs, defStyle);",
                 "    }",
                 "",
-                "    public void bind(Model model) {",
+                "    public void bind(final Model model) {",
                 "        setText(model.text);",
-                "        setBackgroundColor(model.getColor());",
+                "        tracker.listen(new Listener() {",
+                "","",
+                "            @Override",
+                "            public void onChange() {",
+                "                setBackgroundColor(model.getColor());",
+                "            }",
+                "",
+                "        }",
+                "        );",
                 "    }",
                 "",
-                "}", ""
-        ));
-        Code actual = toCode("test_view_base", RootView.of("TextView")
-                .bindClass("me.tatarka.sres.test.Model")
-                .bind("text", "text")
-                .bind("background_color", "getColor()")
-                .build());
-
-        assertThat(actual).isEqualTo(expected);
-    }
-
-    @Test
-    public void testBindObservable() {
-        Code expected = new Code("TestViewBase", Joiner.on("\n").join(
-                "",
-                "package test;",
-                "",
-                "import android.content.Context;",
-                "import android.util.AttributeSet;",
-                "import android.widget.TextView;",
-                "import me.tatarka.sres.Bindable;",
-                "import me.tatarka.sres.test.Model;",
-                "",
-                "public class TestViewBase",
-                "    extends TextView",
-                "    implements Bindable<Model>", "{",
-                "", "",
-                "    public TestViewBase(Context context) {",
-                "        this(context, null);",
-                "    }",
-                "",
-                "    public TestViewBase(Context context, AttributeSet attrs) {",
-                "        this(context, attrs, 0);",
-                "    }",
-                "",
-                "    public TestViewBase(Context context, AttributeSet attrs, int defStyle) {",
-                "        super(context, attrs, defStyle);",
-                "    }",
-                "",
-                "    public void bind(Model model) {",
-                "        setText(model.text);",
-                "        setBackgroundColor(model.getColor());",
+                "    @Override",
+                "    protected void onDetachedFromWindow() {",
+                "        super.onDetachedFromWindow();",
+                "        tracker.clear();",
                 "    }",
                 "",
                 "}", ""

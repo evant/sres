@@ -8,10 +8,7 @@ import java.util.List;
  */
 public class Observable<T> {
     private T value;
-    private List<Listener<T>> listeners = new ArrayList<>();
-
-    public Observable() {
-    }
+    private List<Listener> listeners = new ArrayList<>();
 
     public Observable(T value) {
         this.value = value;
@@ -19,22 +16,28 @@ public class Observable<T> {
 
     public void set(T value) {
         this.value = value;
-        for (Listener<T> listener : listeners) listener.onChange(value);
+        ThreadHandlerProvider.getDefault().postToMainThread(new Runnable() {
+            @Override
+            public void run() {
+                for (Listener listener : listeners) listener.onChange();
+            }
+        });
     }
 
     public T get() {
+        ObservableTracker.track(this);
         return value;
     }
 
-    public void addListener(Listener<T> listener) {
+    public void addListener(Listener listener) {
         listeners.add(listener);
     }
 
-    public void removeListener(Listener<T> listener) {
+    public void removeListener(Listener listener) {
         listeners.remove(listener);
     }
 
-    public interface Listener<T> {
-        void onChange(T value);
+    public interface Listener {
+        void onChange();
     }
 }

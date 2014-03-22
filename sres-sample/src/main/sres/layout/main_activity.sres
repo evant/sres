@@ -1,4 +1,4 @@
-LinearLayout(match) {
+me.tatarka.sres.sample.MyMainView<LinearLayout(match) {
     @+id/content
     orientation = vertical
     bind:class = me.tatarka.sres.sample.MyModel
