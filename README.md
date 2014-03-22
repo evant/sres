@@ -133,11 +133,6 @@ public class MyView extends layout.Sample {
     }
 
     public void onFinishInflate() {
-        text = ((android.widget.TextView) findViewById(R.id.text));
-        button = ((android.widget.Button) findViewById(R.id.button));
-    }
-
-    public void onFinishInflate() {
         super.onFinishInflate();
         // Do what you want
     }
