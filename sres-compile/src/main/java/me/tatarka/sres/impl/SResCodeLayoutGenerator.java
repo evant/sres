@@ -36,7 +36,7 @@ public class SResCodeLayoutGenerator implements LayoutGenerator {
 
             JClass contextClass = m.ref("android.content.Context");
             JClass attrsClass = m.ref("android.util.AttributeSet");
-            JClass observableTrackerClass = m.ref("me.tatarka.sres.ObservableTracker");
+            JClass observableTrackerClass = m.ref("me.tatarka.sres.ChangeTracker");
             JPrimitiveType intClass = m.INT;
             JPrimitiveType voidClass = m.VOID;
 
@@ -82,7 +82,7 @@ public class SResCodeLayoutGenerator implements LayoutGenerator {
     }
 
     private JFieldVar emitTracker(JCodeModel m, JDefinedClass clazz, JClass observableTrackerClass) {
-        return clazz.field(PROTECTED | FINAL, m.ref("me.tatarka.sres.ObservableTracker"), "tracker", _new(observableTrackerClass));
+        return clazz.field(PROTECTED | FINAL, m.ref("me.tatarka.sres.ChangeTracker"), "tracker", _new(observableTrackerClass));
     }
 
     private List<JFieldVar> emitFields(JCodeModel m, JDefinedClass clazz, List<View> views) {
@@ -168,7 +168,7 @@ public class SResCodeLayoutGenerator implements LayoutGenerator {
             JExpression arg = model.invoke(binding.value);
             String setter = toSetter(binding.name);
 
-            JDefinedClass listener = m.anonymousClass(m.ref("me.tatarka.sres.Observable.Listener"));
+            JDefinedClass listener = m.anonymousClass(m.ref("me.tatarka.sres.Trackable.Listener"));
             JMethod o = listener.method(PUBLIC, voidClass, "onChange");
             o.annotate(Override.class);
             JBlock listenerBody = o.body();

@@ -1,7 +1,7 @@
 package me.tatarka.sres.sample;
 
-import me.tatarka.sres.Observable;
 import me.tatarka.sres.ObservableArrayList;
+import me.tatarka.sres.property.BooleanProperty;
 
 import java.util.Arrays;
 import java.util.List;
@@ -10,7 +10,7 @@ import java.util.List;
  * Created by evan on 3/9/14.
  */
 public class MyModel {
-    private Observable<Boolean> enabled = new Observable<>(false);
+    private BooleanProperty enabled = new BooleanProperty(false);
 
     private List<MyListItem> items = new ObservableArrayList<>(Arrays.asList(
             new MyListItem(this, "One"),
