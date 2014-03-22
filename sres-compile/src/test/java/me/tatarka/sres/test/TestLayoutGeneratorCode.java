@@ -123,7 +123,7 @@ public class TestLayoutGeneratorCode {
                 "",
                 "    public void bind(final Model model) {",
                 "        setText(model.text);",
-                "        tracker.listen(new Listener() {",
+                "        tracker.addListener(new Listener() {",
                 "","",
                 "            @Override",
                 "            public void onChange() {",

@@ -175,7 +175,7 @@ public class SResCodeLayoutGenerator implements LayoutGenerator {
 
             (target == null ? listenerBody.invoke(setter) : listenerBody.invoke(target, setter)).arg(arg);
 
-            body.invoke(trackerField, "listen").arg(_new(listener));
+            body.invoke(trackerField, "addListener").arg(_new(listener));
         }
     }
 

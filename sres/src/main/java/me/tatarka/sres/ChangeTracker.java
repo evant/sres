@@ -6,7 +6,10 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created by evan on 3/19/14.
+ * Tracks changes for some set of trackables. Any trackables that want to be tracked must call
+ *
+ * @{link ChangeTracker#track}. @{link me.tatarka.sres.Property} and it's relatives all call this
+ * when you get their value.
  */
 public class ChangeTracker {
     private static ThreadLocal<Boolean> isTracking = new ThreadLocal<Boolean>() {
@@ -35,10 +38,20 @@ public class ChangeTracker {
         return properties;
     }
 
+    /**
+     * Notifies that the given trackable wants to be tracked. This should be called when a listener
+     * is registered on #{addListener}. For example, a @{link Property} calls it on @{link
+     * Property#get}.
+     *
+     * @param trackable the trackable to track
+     */
     public static void track(Trackable trackable) {
         if (isTracking.get()) trackedObservables.get().add(trackable);
     }
 
+    /**
+     * Clears all registered listeners so they will no longer be called when the trackable changes.
+     */
     public void clear() {
         ensureMainThread("clear");
 
@@ -48,8 +61,14 @@ public class ChangeTracker {
         observableMap.clear();
     }
 
-    public void listen(Trackable.Listener listener) {
-        ensureMainThread("listen");
+    /**
+     * Adds the listener. The listener will immediately be called to discover which trackables it
+     * tracks. Then it will be called every time any of it's trackables change.
+     *
+     * @param listener the listener
+     */
+    public void addListener(Trackable.Listener listener) {
+        ensureMainThread("addListener");
 
         startTracking();
         listener.onChange();
@@ -61,8 +80,13 @@ public class ChangeTracker {
         for (Trackable trackable : newEntry) trackable.addListener(listener);
     }
 
-    public void unlisten(Trackable.Listener listener) {
-        ensureMainThread("unlisten");
+    /**
+     * Removes the listener. It will no longer be called when it's trackables change.
+     *
+     * @param listener the listener
+     */
+    public void removeListener(Trackable.Listener listener) {
+        ensureMainThread("removeListener");
 
         List<Trackable> entry = observableMap.remove(listener);
         if (entry != null) {
