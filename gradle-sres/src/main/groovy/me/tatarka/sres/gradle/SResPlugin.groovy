@@ -32,6 +32,10 @@ class SResPlugin implements Plugin<Project> {
         def sresGenerate = project.task("sresGenerate");
         def sres = new SRes();
 
+        project.dependencies {
+            compile 'me.tatarka.sres:sres-android:1.0-SNAPSHOT'
+        }
+
         project.android.sourceSets.all { sourceSet ->
             def dirSet = new DefaultSourceDirectorySet("$sourceSet.displayName sres source", fileResolver)
             dirSet.filter { include "**/*.sres" }
