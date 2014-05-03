@@ -5,11 +5,11 @@ import android.util.SparseIntArray;
 /**
  * Created by evan on 3/11/14.
  */
-public class LayoutSelectorHelper<T> {
-    private LayoutSelector<T> layoutSelector;
+public class LayoutSelectorHelper {
+    private LayoutSelector layoutSelector;
     private SparseIntArray viewTypeIndexes = new SparseIntArray();
 
-    public void setLayoutSelector(LayoutSelector<T> layoutSelector) {
+    public void setLayoutSelector(LayoutSelector<?> layoutSelector) {
         this.layoutSelector = layoutSelector;
     }
 
@@ -31,7 +31,7 @@ public class LayoutSelectorHelper<T> {
         return layoutSelector.getCount();
     }
 
-    public int getItemViewType(int position, T item) {
+    public int getItemViewType(int position, Object item) {
         int layout = layoutSelector.getLayout(position, item);
         int itemType = viewTypeIndexes.get(layout, -1);
         if (itemType < 0) {
@@ -41,7 +41,7 @@ public class LayoutSelectorHelper<T> {
         return itemType;
     }
 
-    public int getLayout(int position, T item) {
+    public int getLayout(int position, Object item) {
         return layoutSelector.getLayout(position, item);
     }
 }

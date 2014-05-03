@@ -1,6 +1,6 @@
 buildscript {
     dependencies {
-        classpath 'com.android.tools.build:gradle:0.8.+'
+        classpath 'com.android.tools.build:gradle:0.9.+'
         classpath 'me.tatarka.sres.gradle:gradle-sres:1.0-SNAPSHOT'
     }
 
@@ -12,10 +12,6 @@ buildscript {
 
 apply plugin: 'android'
 apply plugin: 'sres'
-
-dependencies {
-    compile project(':sres-android')
-}
 
 android {
     compileSdkVersion 19

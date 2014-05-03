@@ -12,8 +12,8 @@ import java.util.List;
 /**
  * Created by evan on 3/11/14.
  */
-public class ViewPager<T> extends android.support.v4.view.ViewPager implements Bindable<List<T>> {
-    private LayoutSelectorHelper<T> helper = new LayoutSelectorHelper<>();
+public class ViewPager extends android.support.v4.view.ViewPager {
+    private LayoutSelectorHelper helper = new LayoutSelectorHelper();
 
     public ViewPager(Context context) {
         this(context, null);
@@ -30,26 +30,25 @@ public class ViewPager<T> extends android.support.v4.view.ViewPager implements B
         }
     }
 
-    public void setLayoutSelector(LayoutSelector<T> layoutSelector) {
+    public <T> void setLayoutSelector(LayoutSelector<T> layoutSelector) {
         helper.setLayoutSelector(layoutSelector);
         if (getAdapter() != null) {
-            ObservableList<T> model = getAdapter().getList();
-            bind(model);
+            ObservableList<T> model = (ObservableList<T>) getAdapter().getList();
+            setPages(model);
         }
     }
 
     public void setLayout(final int layoutId) {
-        setLayoutSelector(LayoutSelectorHelper.<T>fromLayout(layoutId));
+        setLayoutSelector(LayoutSelectorHelper.fromLayout(layoutId));
     }
 
     @Override
-    public ObservablePagerAdapter<T> getAdapter() {
-        return (ObservablePagerAdapter<T>) super.getAdapter();
+    public ObservablePagerAdapter<?> getAdapter() {
+        return (ObservablePagerAdapter<?>) super.getAdapter();
     }
 
-    @Override
-    public void bind(List<T> model) {
-        setAdapter(new ObservablePagerAdapter<T>(model) {
+    public <T> void setPages(final List<T> pages) {
+        setAdapter(new ObservablePagerAdapter<T>(pages) {
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
                 View view = convertView;

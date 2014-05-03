@@ -12,8 +12,8 @@ import java.util.List;
 /**
  * Created by evan on 3/9/14.
  */
-public class ListView<T> extends android.widget.ListView implements Bindable<List<T>> {
-    private LayoutSelectorHelper<T> helper = new LayoutSelectorHelper<>();
+public class ListView extends android.widget.ListView {
+    private LayoutSelectorHelper helper = new LayoutSelectorHelper();
 
     public ListView(Context context) {
         this(context, null);
@@ -34,21 +34,20 @@ public class ListView<T> extends android.widget.ListView implements Bindable<Lis
         }
     }
 
-    public void setLayoutSelector(LayoutSelector<T> layoutSelector) {
+    public <T> void setLayoutSelector(LayoutSelector<T> layoutSelector) {
         helper.setLayoutSelector(layoutSelector);
         if (getAdapter() != null) {
-            ObservableList<T> model = getAdapter().getList();
-            bind(model);
+            ObservableList<T> items = (ObservableList<T>) getAdapter().getList();
+            setItems(items);
         }
     }
 
     public void setLayout(final int layout) {
-        setLayoutSelector(LayoutSelectorHelper.<T>fromLayout(layout));
+        setLayoutSelector(LayoutSelectorHelper.fromLayout(layout));
     }
 
-    @Override
-    public void bind(List<T> model) {
-        setAdapter(new ObservableAdapter<T>(model) {
+    public <T> void setItems(List<T> items) {
+        setAdapter(new ObservableAdapter<T>(items) {
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
                 View view = convertView;
@@ -73,7 +72,7 @@ public class ListView<T> extends android.widget.ListView implements Bindable<Lis
     }
 
     @Override
-    public ObservableAdapter<T> getAdapter() {
-        return (ObservableAdapter<T>) super.getAdapter();
+    public ObservableAdapter<?> getAdapter() {
+        return (ObservableAdapter<?>) super.getAdapter();
     }
 }

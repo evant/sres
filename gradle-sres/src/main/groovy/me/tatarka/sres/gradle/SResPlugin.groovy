@@ -33,7 +33,8 @@ class SResPlugin implements Plugin<Project> {
         def sres = new SRes();
 
         project.dependencies {
-            compile 'me.tatarka.sres:sres-android:1.0-SNAPSHOT'
+            compile 'me.tatarka.sres:sres:1.0-SNAPSHOT'
+            compile 'me.tatarka.sres:sres-android:1.0-SNAPSHOT@aar'
         }
 
         project.android.sourceSets.all { sourceSet ->
