@@ -1,5 +1,6 @@
 sres
 ====
+**Warning! This is incomplete and not activly worked on. Instead, I'm planning or released the features of this as seperated, smaller libraries**
 
 Super-Duper Android Layout Preprocessor
 
