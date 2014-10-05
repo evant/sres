@@ -1,11 +1,13 @@
 sres
 ====
-**Warning! This is incomplete and not activly worked on. Instead, I'm planning or released the features of this as seperated, smaller libraries**
+**Warning! This is incomplete and not activly worked on. Instead, I'm planning or released the features of this as seperated, smaller libraries, check out [Holdr](https://github.com/evant/holdr) instead.**
 
 Super-Duper Android Layout Preprocessor
 
 sres simplifies Android Layout creating and usage by using a more light-weight dsl for creating
 layyouts and by generating code to help use them.
+
+
 
 Install
 -------
